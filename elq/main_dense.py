@@ -626,6 +626,7 @@ def load_models(args, logger):
     biencoder_params["load_cand_enc_only"] = False
     if getattr(args, 'max_context_length', None) is not None:
         biencoder_params["max_context_length"] = args.max_context_length
+    print(biencoder_params)
     biencoder = load_biencoder(biencoder_params)
     if biencoder_params["no_cuda"] and type(biencoder.model).__name__ == 'DataParallel':
         biencoder.model = biencoder.model.module
