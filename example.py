@@ -25,18 +25,19 @@ args = argparse.Namespace(**config)
 
 models = main_dense.load_models(args, logger=None)
 
-data_path = '/data/lyt/exp/rag'
+data_path = '/data/lyt/exp/rush/qg/qs'
 
-for phase in ['train']:
-    datas = json.load(open(os.path.join(data_path,f'{phase}.json')))
+for model in ['question','gpt_best_question','template_question']:
+    for phase in ['small_iid_test','small_ood_test','train','valid']:
+        datas = json.load(open(os.path.join(data_path,f'{phase}.json')))
 
-    data_to_link = [{
-                        "id": i,
-                        "text": f"{datas[i]['text']} {datas[i]['question']}".lower(),
-                    }
-                    for i in range(len(datas))]
+        data_to_link = [{
+                            "id": datas[i]['id'],
+                            "text": f"{datas[i]['context']} {datas[i][model]}".lower(),
+                        }
+                        for i in range(len(datas))]
 
-    predictions = main_dense.run(args, None, *models, test_data=data_to_link)
+        predictions = main_dense.run(args, None, *models, test_data=data_to_link)
 
-    with open(os.path.join(data_path,f'link_{phase}.json'),'w') as f:
-        json.dump(predictions,f,indent=4,ensure_ascii=False)
+        with open(os.path.join(data_path,f'link_{model}_{phase}.json'),'w') as f:
+            json.dump(predictions,f,indent=4,ensure_ascii=False)
